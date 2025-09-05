@@ -1,4 +1,4 @@
-package jdbc.jdbcEx03;
+package jdbcEx03;
 
 public class AccountDelete {
 }

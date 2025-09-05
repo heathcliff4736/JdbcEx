@@ -4,7 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.sql.*;
 
-public class BoardInsertTest {
+public class AccountTest {
     public static void main(String[] args) {
         String driver = "com.mysql.cj.jdbc.Driver";
         String url = "jdbc:mysql://localhost:3306/bookmarketdb?serverTimezone=Asia/Seoul";
@@ -25,50 +25,34 @@ public class BoardInsertTest {
             con.setAutoCommit(true);
 
             // 매개변수화 된 SQL문
-            String sql = "INSERT INTO boards(btitle,bcontent,bwriter,bdate,bfilename,bfiledata) values(?, ?, ?, now(), ? ,?)";
+            String sql = "INSERT INTO accounts(ano,owner,balance) values(?, ?, ?)";
 
             // PreparedStatement 얻기
             PreparedStatement pstmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
 
             // 값 지정
-            pstmt.setString(1,"글제목3");
-            pstmt.setString(2,"글내용33333");
-            pstmt.setString(3,"작성자3");
-            pstmt.setString(4, "spring.jpg");
-            pstmt.setBlob(5,new FileInputStream("C:/Temp/spring.jpg"));
-
+            String ano = "1112-1213-3232-12122";
+            pstmt.setString(1,ano);
+            pstmt.setString(2,"엄홍길");
+            pstmt.setString(3,"100000");
 
             // SQL문 실행
             int result = pstmt.executeUpdate();
             System.out.println("저장된 행의 수 "+result);
 
-            int bno = 0;
-            // bno 값 얻기
-            if(result == 1) {
-                ResultSet rs = pstmt.getGeneratedKeys();
-                if(rs.next()) {
-                    bno = rs.getInt(1);
-//                    System.out.println("bno = " + bno);
-
-                }
-                rs.close();
-            }
-            if(bno > 0){
-                String selectSql = "SELECT bno, btitle, bcontent, bwriter, bdate, bfilename FROM boards WHERE bno = ?";
+            if(!ano.equals("") && ano != null) {
+                String selectSql = "SELECT ano, owner, balance FROM accounts WHERE ano = ?";
 
                 try(PreparedStatement selectPstmt = con.prepareStatement(selectSql)) {
 
-                    selectPstmt.setInt(1, bno);
+                    selectPstmt.setString(1, ano);
 
                     try(ResultSet rs = selectPstmt.executeQuery()) {
                         while(rs.next()) {
-                            bno = rs.getInt(1);
-                            System.out.println("bno = " + bno);
-                            System.out.println("btitle = " + rs.getString(2));
-                            System.out.println("bcontent = " + rs.getString(3));
-                            System.out.println("bwriter = " + rs.getString(4));
-                            System.out.println("bdate = " + rs.getTimestamp(5));
-                            System.out.println("bfilename = " + rs.getString(6));
+                            ano = rs.getString(1);
+                            System.out.println("ano = " + ano);
+                            System.out.println("owner = " + rs.getString(2));
+                            System.out.println("balance = " + rs.getString(3));
                         }
                     }
                 } catch (Exception e) {
@@ -84,8 +68,6 @@ public class BoardInsertTest {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         }
     }
 }

@@ -1,8 +1,8 @@
-package jdbc.jdbcEx02;
+package jdbcEx02;
 
 
-import jdbc.jdbcEx01.vo.Person;
-import jdbc.util.DBUtil;
+import jdbcEx01.vo.Person;
+import util.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,7 +31,7 @@ public class PersonDeleteEx {
             String selectSql = "SELECT id, name FROM person";
             ResultSet rs = pstmt.executeQuery(selectSql);
             while(rs.next()) {
-                jdbc.jdbcEx01.vo.Person person = new Person();
+                jdbcEx01.vo.Person person = new Person();
                 person.setId(rs.getInt(1));
                 person.setName(rs.getString(2));
                 System.out.println(person.getId()+" "+person.getName());

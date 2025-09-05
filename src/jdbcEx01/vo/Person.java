@@ -1,4 +1,4 @@
-package jdbcEx01;
+package jdbcEx01.vo;
 
 import lombok.*;
 
@@ -6,6 +6,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@Data
 @ToString
 public class Person {
     private int id;
