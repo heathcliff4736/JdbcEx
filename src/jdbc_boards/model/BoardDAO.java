@@ -43,11 +43,7 @@ public class BoardDAO {
     }
 
     public boolean update(Board board) {
-        String sql = new StringBuilder()
-                .append("UPDATE boardtable SET ")
-                .append("btitle = ?, ")
-                .append("bcontent = ? ")
-                .append("WHERE bno = ?").toString();
+        String sql = "UPDATE boardtable SET btitle = ?, bcontent = ? WHERE bno = ?";
         try(
                 Connection conn = DBUtil.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -98,27 +94,28 @@ public class BoardDAO {
     }
 
     public List<Board> selectAll() {
-        String sql = "SELECT * FROM boardtable";
+        String sql = "SELECT * FROM boardtable ORDER BY bdate DESC";
         List<Board> boardList = new ArrayList<>();
         try(
             Connection conn = DBUtil.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
         ) {
-            ResultSet rs = pstmt.executeQuery();
-            while(rs.next()) {
-                Board board = new Board();
-                board.setBno(rs.getInt("bno"));
-                board.setBtitle(rs.getString("btitle"));
-                board.setBcontent(rs.getString("bcontent"));
-                board.setBwriter(rs.getString("bwriter"));
-                board.setBdate(rs.getDate("bdate"));
-                boardList.add(board);
+            try (ResultSet rs = pstmt.executeQuery();){
+                while(rs.next()) {
+                    Board board = new Board();
+                    board.setBno(rs.getInt("bno"));
+                    board.setBtitle(rs.getString("btitle"));
+                    board.setBcontent(rs.getString("bcontent"));
+                    board.setBwriter(rs.getString("bwriter"));
+                    board.setBdate(rs.getDate("bdate"));
+                    boardList.add(board);
+                }
+                return boardList;
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
-        return boardList;
+        return null;
     }
 
     public Board selectOne(int bno) {
@@ -128,18 +125,20 @@ public class BoardDAO {
                 PreparedStatement pstmt = conn.prepareStatement(sql);
         ) {
             pstmt.setInt(1, bno);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                Board board = new Board();
-                board.setBno(rs.getInt("bno"));
-                board.setBtitle(rs.getString("btitle"));
-                board.setBcontent(rs.getString("bcontent"));
-                board.setBwriter(rs.getString("bwriter"));
-                board.setBdate(rs.getDate("bdate"));
-                return board;
-            } else {
-                System.out.println("찾는 글이 없습니다.");
-                return null;
+            try (ResultSet rs = pstmt.executeQuery();) {
+                if (rs.next()) {
+                    Board board = new Board();
+                    board.setBno(rs.getInt("bno"));
+                    board.setBtitle(rs.getString("btitle"));
+                    board.setBcontent(rs.getString("bcontent"));
+                    board.setBwriter(rs.getString("bwriter"));
+                    board.setBdate(rs.getDate("bdate"));
+
+                    return board;
+                } else {
+                    System.out.println("찾는 글이 없습니다.");
+                    return null;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
